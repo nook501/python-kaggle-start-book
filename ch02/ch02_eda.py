@@ -61,3 +61,14 @@ plt.savefig("graph_sex.png")
 # Embarked(乗船した港)とSurvivedの関係
 sns.countplot(x='Embarked', hue='Survived', data=train)
 plt.savefig("graph_embarked.png")
+
+# FamilySizeを作成してSurvivedとの関係を見る
+train['FamilySize'] = train['Parch'] + train['SibSp'] + 1
+sns.countplot(x='FamilySize', hue='Survived', data=train)
+plt.savefig("graph_FamilySize.png")
+
+# IsAloneを作成してSurvivedとの関係を見る
+train['IsAlone'] = 0
+train.loc[train['FamilySize'] == 1, 'IsAlone'] = 1
+sns.countplot(x='IsAlone', hue='Survived', data=train)
+plt.savefig("graph_IsAlone.png")

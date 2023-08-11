@@ -17,12 +17,12 @@ def feature_engineering(train, test):
 
     data["Fare"].fillna(np.mean(data["Fare"]), inplace=True)  # type: ignore
 
-    age_avg = data["Age"].mean()
-    age_std = data["Age"].std()
-    data["Age"].fillna(
-        np.random.randint(age_avg - age_std, age_avg + age_std),  # type: ignore
-        inplace=True,
-    )
+    data["Age"].fillna(data["Age"].median(), inplace=True)
+
+    data['FamilySize'] = data['Parch'] + data['SibSp'] + 1  # FamilySize を作成
+
+    data['IsAlone'] = 0
+    data.loc[data['FamilySize'] == 1, 'IsAlone'] = 1  # IsAlone を作成
 
     delete_columns = ["Name", "PassengerId", "SibSp", "Parch", "Ticket", "Cabin"]
     data.drop(delete_columns, axis=1, inplace=True)
@@ -36,7 +36,7 @@ def feature_engineering(train, test):
 # データの読み込み
 train = pd.read_csv("../input/titanic/train.csv")
 test = pd.read_csv("../input/titanic/test.csv")  # Survivedの列だけない
-gender_submission = pd.read_csv(
+sub = pd.read_csv(
     "../input/titanic/gender_submission.csv"
 )  # 求められる提出の形式のサンプル
 
@@ -57,6 +57,5 @@ y_pred = clf.predict(X_test)
 # print(y_pred[:20])
 
 # 提出用ファイルの作成
-sub = pd.read_csv("../input/titanic/gender_submission.csv")
 sub["Survived"] = list(map(int, y_pred))
 sub.to_csv("submission.csv", index=False)
